@@ -80,7 +80,33 @@ const DEF = { onboarded: false, cards: {}, custom: [], days: {}, streak: 0, last
   patternIdx: 0, listenIdx: 0, shadowIdx: 0, roleIdx: 0, aiKey: "", aiModel: "claude-haiku-5-5", voice: "", rate: 0.9,
   chatTurns: 0, listenTotal: 0, remindTime: "21:00", aiDialogs: [], aiListen: [], flow: { date: null, step: 0 }, doneDays: [] };
 let S = Object.assign({}, DEF);
-try { const j = localStorage.getItem(KEY); if (j) { S = Object.assign({}, DEF, JSON.parse(j)); if (S.focus === null) S.focus = []; if (Object.keys(S.cards).length && !("onboarded" in JSON.parse(j))) S.onboarded = true; } } catch (e) {}
+/* 저장된 데이터·백업 파일을 그대로 믿지 않고, 알려진 항목만 정해진 형식으로 받아들인다 */
+function clean(j, keepKey) {
+  const o = Object.assign({}, DEF), D8 = /^\d{4}-\d{2}-\d{2}$/, isD = x => typeof x === "string" && D8.test(x);
+  const int = (x, lo, hi, d = 0) => Number.isFinite(+x) ? Math.min(hi, Math.max(lo, Math.round(+x))) : d;
+  const str = (x, n = 300) => typeof x === "string" ? x.slice(0, n) : "";
+  if (!j || typeof j !== "object") return o;
+  o.onboarded = j.onboarded === true; o.sound = j.sound !== false;
+  o.newPerDay = [3, 5, 8, 10, 15].includes(+j.newPerDay) ? +j.newPerDay : DEF.newPerDay;
+  o.rate = [.75, .9, 1].includes(+j.rate) ? +j.rate : DEF.rate;
+  o.level = ["초급", "중급", "고급"].includes(j.level) ? j.level : null;
+  o.testScore = j.testScore == null ? null : int(j.testScore, 0, 100);
+  o.lastDay = isD(j.lastDay) ? j.lastDay : null;
+  o.remindTime = /^\d{2}:\d{2}$/.test(j.remindTime) ? j.remindTime : DEF.remindTime;
+  o.voice = str(j.voice, 120); o.aiModel = str(j.aiModel, 80) || DEF.aiModel; o.aiKey = keepKey ? str(j.aiKey, 300) : "";
+  for (const k of ["streak", "patternIdx", "listenIdx", "shadowIdx", "roleIdx", "chatTurns", "listenTotal", "spokenTotal", "recCount"]) o[k] = int(j[k], 0, 1e7);
+  o.focus = Array.isArray(j.focus) ? j.focus.filter(c => CATS.includes(c)) : [];
+  o.cards = {}; if (j.cards && typeof j.cards === "object") for (const [k, v] of Object.entries(j.cards)) if (/^[pu][\w]{1,30}$/.test(k) && v && isD(v.due)) o.cards[k] = { box: int(v.box, 0, INTERVALS.length - 1), due: v.due };
+  o.custom = Array.isArray(j.custom) ? j.custom.filter(c => c && /^u\d{1,20}$/.test(c.id)).slice(0, 2000).map(c => ({ id: c.id, ko: str(c.ko), en: str(c.en), note: str(c.note) })) : [];
+  o.days = {}; if (j.days && typeof j.days === "object") for (const [k, v] of Object.entries(j.days)) if (isD(k) && v && typeof v === "object") o.days[k] = { rev: int(v.rev, 0, 1e5), newL: int(v.newL, 0, 1e5), listen: int(v.listen, 0, 1440), steps: int(v.steps, 0, 5), spoken: int(v.spoken, 0, 1e5), human: v.human === true };
+  o.doneDays = Array.isArray(j.doneDays) ? [...new Set(j.doneDays.filter(isD))] : [];
+  o.awards = {}; if (j.awards && typeof j.awards === "object") for (const [k, v] of Object.entries(j.awards)) if (/^[a-z0-9]{1,10}$/.test(k) && isD(v)) o.awards[k] = v;
+  o.flow = j.flow && isD(j.flow.date) ? { date: j.flow.date, step: int(j.flow.step, 0, 5) } : { date: null, step: 0 };
+  o.aiDialogs = Array.isArray(j.aiDialogs) ? j.aiDialogs.slice(-40).filter(d => d && typeof d.title === "string" && Array.isArray(d.lines)).map(d => ({ title: str(d.title, 40), lines: d.lines.slice(0, 12).filter(l => Array.isArray(l)).map(l => [l[0] === "A" ? "A" : "B", str(l[1]), str(l[2])]) })).filter(d => d.lines.length >= 2) : [];
+  o.aiListen = [];
+  return o;
+}
+try { const j = localStorage.getItem(KEY); if (j) { const raw = JSON.parse(j); S = clean(raw, true); if (Object.keys(S.cards).length && !("onboarded" in raw)) S.onboarded = true; } } catch (e) {}
 function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
 function D() { const k = today(); if (!S.days[k]) S.days[k] = { rev: 0, newL: 0, listen: 0, human: false }; return S.days[k]; }
 /* ---------- 성취: 링, 배지, 소리 ---------- */
@@ -269,7 +295,7 @@ function go(t) {
   ({ home: vHome, practice: vPractice, me: vMe })[t]();
 }
 $$("nav.tabs button").forEach(b => b.onclick = () => go(b.dataset.tab));
-const cell = (o) => `<li><${o.href ? `a href="${o.href}" target="_blank" rel="noopener"` : "button"} class="cell ${o.done ? "done" : ""}" ${o.attr || ""}>${o.icon ? `<span class="glyph" style="--c:${o.color || COLOR.misc}">${o.icon}</span>` : ""}${o.status != null ? `<span class="status ${o.status ? "on" : ""}" style="--c:${o.color || COLOR.misc}">${o.status ? I.tick : ""}</span>` : ""}<span class="t">${o.t}${o.d ? `<small>${o.d}</small>` : ""}</span>${o.v != null ? `<span class="v">${o.v}</span>` : ""}${o.done ? `<span class="ok">${I.tick}</span>` : o.noChev ? "" : I.chev}</${o.href ? "a" : "button"}></li>`;
+const cell = (o) => `<li><${o.href ? `a href="${o.href}"${/^https?:/.test(o.href) ? ' target="_blank" rel="noopener"' : ""}` : "button"} class="cell ${o.done ? "done" : ""}" ${o.attr || ""}>${o.icon ? `<span class="glyph" style="--c:${o.color || COLOR.misc}">${o.icon}</span>` : ""}${o.status != null ? `<span class="status ${o.status ? "on" : ""}" style="--c:${o.color || COLOR.misc}">${o.status ? I.tick : ""}</span>` : ""}<span class="t">${o.t}${o.d ? `<small>${o.d}</small>` : ""}</span>${o.v != null ? `<span class="v">${o.v}</span>` : ""}${o.done ? `<span class="ok">${I.tick}</span>` : o.noChev ? "" : I.chev}</${o.href ? "a" : "button"}></li>`;
 const dateStr = () => { const d = new Date(); return `${d.getMonth() + 1}월 ${d.getDate()}일 ${"일월화수목금토"[d.getDay()]}요일`; };
 
 /* 말하기 입력: 마이크가 되면 마이크, 아니면 직접 적기 */
@@ -762,11 +788,13 @@ function settings() {
       <li class="cell"><span class="sub" style="font-size:15px;flex:none">모델</span><input class="field" id="model" value="${esc(S.aiModel)}" style="text-align:right"></li>
       <li><button class="cell" id="ks"><span class="t" style="color:var(--blue)">저장하고 연결 확인</span></button></li>
       ${S.aiKey ? `<li><button class="cell" id="kd"><span class="t" style="color:var(--red)">키 지우기</span></button></li>` : ""}</ul>
-    <p class="foot">키는 이 기기에만 저장되고 Anthropic으로만 전송돼요. 쓴 만큼 키 주인 계정에 요금이 나가요. <a href="https://console.anthropic.com/" target="_blank" rel="noopener">키 만들기</a></p>
+    <p class="foot">키는 이 기기 브라우저에만 저장되고 Anthropic으로만 전송돼요. 대화 내용도 Anthropic으로 보내져요. 사용 한도를 낮게 정한 전용 키를 쓰고, 공용 기기에서는 넣지 마세요. <a href="https://console.anthropic.com/" target="_blank" rel="noopener">키 만들기</a></p>
     <p class="gh">백업</p><ul class="group plain"><li><button class="cell" id="ex"><span class="t" style="color:var(--blue)">백업 파일 받기</span></button></li>
       <li><label class="cell" style="cursor:pointer"><span class="t" style="color:var(--blue)">백업 불러오기</span><input type="file" accept="application/json" id="im" hidden></label></li></ul>
     <p class="foot">진도는 이 기기에만 저장돼요. 녹음은 백업에 포함되지 않아요.</p>
-    <ul class="group plain" style="margin-top:24px"><li><button class="cell" id="wipe"><span class="t" style="color:var(--red)">모든 진도 지우기</span></button></li></ul>`, "", { nav: { title: "", back: "기록" } });
+    <p class="gh">개인정보</p><ul class="group plain"><li class="cell" style="display:block;font-size:15px;line-height:1.45">말문은 서버가 없어서 아무 정보도 모으지 않아요. 진도와 녹음은 이 기기에만 저장돼요.<br><br><b>마이크로 말하기</b>를 누르면 받아쓰기를 위해 목소리가 브라우저 회사(Chrome은 Google, Safari는 Apple)로 보내질 수 있어요. 싫다면 마이크 대신 키보드 입력이나 녹음 버튼을 쓰세요. 녹음 버튼으로 남긴 소리는 기기 밖으로 나가지 않아요.</li>
+      ${cell({ t: "개인정보 처리방침", href: "privacy.html" })}</ul>
+    <ul class="group plain" style="margin-top:24px"><li><button class="cell" id="wipe"><span class="t" style="color:var(--red)">진도와 녹음 모두 지우기</span></button></li></ul>`, "", { nav: { title: "", back: "기록" } });
   $$("[data-n]").forEach(b => b.onclick = () => { S.newPerDay = +b.dataset.n; $$("[data-n]").forEach(x => x.setAttribute("aria-pressed", x === b)); save(); });
   $$("[data-r]").forEach(b => b.onclick = () => { S.rate = +b.dataset.r; $$("[data-r]").forEach(x => x.setAttribute("aria-pressed", x === b)); save(); speak("This is how fast I will speak."); });
   $$("[data-snd]").forEach(b => b.onclick = () => { S.sound = b.dataset.snd === "true"; $$("[data-snd]").forEach(x => x.setAttribute("aria-pressed", x === b)); save(); chime("ok"); });
@@ -784,8 +812,8 @@ function settings() {
   $("#ks").onclick = async () => { S.aiKey = $("#key").value.trim(); S.aiModel = $("#model").value.trim() || DEF.aiModel; save(); if (!S.aiKey) return toast("키를 지웠어요"); toast("확인하는 중…"); try { await ai("Reply with OK", 5); toast("연결됐어요"); } catch (er) { toast(aiError(er)); } };
   const kd = $("#kd"); if (kd) kd.onclick = () => { S.aiKey = ""; save(); toast("키를 지웠어요"); settings(); };
   $("#ex").onclick = () => download(`malmun-backup-${today()}.json`, new Blob([JSON.stringify(Object.assign({}, S, { aiKey: "" }))], { type: "application/json" }));
-  $("#im").onchange = async e => { const f = e.target.files[0]; if (!f) return; try { const j = JSON.parse(await f.text()); if (!j.cards) throw 0; S = Object.assign({}, DEF, j, { aiKey: S.aiKey }); save(); toast("불러왔어요"); go("home"); } catch (er) { toast("말문 백업 파일이 아니에요"); } };
-  $("#wipe").onclick = e => { const b = e.currentTarget, t = $(".t", b); if (!b.dataset.sure) { b.dataset.sure = 1; t.textContent = "한 번 더 누르면 모두 지워져요"; return; } S = Object.assign({}, DEF, { aiKey: S.aiKey }); save(); go("home"); };
+  $("#im").onchange = async e => { const f = e.target.files[0]; if (!f) return; try { if (f.size > 5e6) throw 0; const j = JSON.parse(await f.text()); if (!j || !j.cards) throw 0; const key = S.aiKey; S = clean(j, false); S.aiKey = key; save(); toast("불러왔어요"); go("home"); } catch (er) { toast("말문 백업 파일이 아니에요"); } };
+  $("#wipe").onclick = e => { const b = e.currentTarget, t = $(".t", b); if (!b.dataset.sure) { b.dataset.sure = 1; t.textContent = "한 번 더 누르면 모두 지워져요"; return; } S = Object.assign({}, DEF, { aiKey: S.aiKey }); save(); idb.all().then(rs => Promise.all(rs.map(r => idb.del(r.id)))).catch(() => {}); toast("진도와 녹음을 모두 지웠어요"); go("home"); };
 }
 
 /* ---------- 시작 ---------- */

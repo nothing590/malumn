@@ -1,7 +1,7 @@
 // 말문 서비스 워커: 앱 파일을 모두 저장해서 인터넷 없이 열리게 한다.
-const VERSION = "malmun-v11";
+const VERSION = "malmun-v13";
 const FILES = [
-  "./", "index.html", "manifest.webmanifest", "app.css", "app.js",
+  "./", "index.html", "privacy.html", "manifest.webmanifest", "app.css", "app.js",
   "phrases.js", "patterns.js", "dialogs.js", "listening.js", "leveltest.js",
   "pretendard-500.woff2", "pretendard-800.woff2",
   "icon-180.png", "icon-192.png", "icon-512.png", "maskable-512.png"

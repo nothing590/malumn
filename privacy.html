@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>말문 개인정보 처리방침</title>
+<link rel="icon" href="icon-192.png">
+<link rel="stylesheet" href="app.css">
+<style>
+  .doc{max-width:640px;margin:0 auto;padding:0 16px 48px}
+  .doc .card{margin-top:12px}
+  .doc h2{font-size:17px;font-weight:700;margin:0 0 8px}
+  .doc p,.doc li{font-size:15px;line-height:1.6;color:var(--label);margin:0 0 8px}
+  .doc ul{padding-left:20px;margin:0}
+  .doc table{width:100%;border-collapse:collapse;font-size:14px}
+  .doc th,.doc td{text-align:left;padding:8px 6px;border-top:.5px solid var(--sep);vertical-align:top}
+  .doc th{color:var(--label2);font-weight:600;border-top:0}
+  .back{display:inline-block;padding:14px 0 0;font-size:17px}
+</style>
+</head>
+<body>
+<main class="doc">
+  <a class="back" href="./">‹ 말문</a>
+  <header class="large"><h1>개인정보 처리방침</h1><p class="date" style="margin-top:6px">시행일 2026년 11월 18일</p></header>
+
+  <section class="card">
+    <h2>한눈에 보기</h2>
+    <p>말문은 서버가 없는 앱이에요. 개발자는 이용자의 개인정보를 <b>수집하지 않고, 저장하지 않고, 다른 곳에 제공하지 않아요.</b> 공부 기록과 녹음은 이용자의 기기 안에만 저장돼요.</p>
+  </section>
+
+  <section class="card">
+    <h2>1. 수집하는 개인정보</h2>
+    <p>없어요. 회원가입, 로그인, 이름·이메일·전화번호 입력, 광고, 방문 분석 도구가 없어요.</p>
+  </section>
+
+  <section class="card">
+    <h2>2. 기기에 저장되는 정보</h2>
+    <p>아래 정보는 앱을 쓰기 위해 <b>이용자의 브라우저 안에만</b> 저장되고, 개발자를 포함한 누구에게도 전송되지 않아요.</p>
+    <table>
+      <tr><th>항목</th><th>저장 위치</th></tr>
+      <tr><td>공부 진도, 레벨, 설정, 배지</td><td>브라우저 localStorage</td></tr>
+      <tr><td>1분 말하기 녹음</td><td>브라우저 IndexedDB</td></tr>
+      <tr><td>AI용 API 키 (넣은 경우에만)</td><td>브라우저 localStorage</td></tr>
+    </table>
+  </section>
+
+  <section class="card">
+    <h2>3. 외부로 전송되는 경우</h2>
+    <p>아래 기능은 이용자가 직접 켜거나 누를 때만 작동하며, 각 회사의 개인정보 정책을 따라요.</p>
+    <ul>
+      <li><b>마이크로 말하기(받아쓰기)</b>: 브라우저의 음성 인식 기능을 사용해요. 이용하는 브라우저에 따라 음성이 Google(Chrome) 또는 Apple(Safari) 서버로 전송될 수 있어요. 원하지 않으면 키보드 입력이나 녹음 버튼을 쓰세요. 녹음 버튼으로 남긴 소리는 기기 밖으로 나가지 않아요.</li>
+      <li><b>AI와 대화 (선택)</b>: 이용자가 설정에 직접 넣은 API 키와 대화 내용이 Anthropic API로 전송돼요. 키를 넣지 않으면 전송되지 않아요.</li>
+      <li><b>외부 링크</b>: 듣기 자료 링크(BBC, VOA, TED-Ed)를 누르면 해당 사이트로 이동해요. 이때 말문 주소는 전달되지 않아요.</li>
+      <li><b>호스팅</b>: 앱 파일을 내려받을 때 호스팅 서비스(GitHub Pages)가 일반적인 접속 기록(IP 주소 등)을 남길 수 있어요.</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2>4. 보관 기간과 삭제</h2>
+    <p>기기에 저장된 정보는 이용자가 지울 때까지 남아 있어요. 앱의 기록 › 설정 › <b>진도와 녹음 모두 지우기</b>를 누르거나, 브라우저의 사이트 데이터를 삭제하면 모두 지워져요. API 키는 설정 › 키 지우기로 따로 지울 수 있어요.</p>
+  </section>
+
+  <section class="card">
+    <h2>5. 안전을 위한 조치</h2>
+    <ul>
+      <li>콘텐츠 보안 정책(CSP)으로 앱 파일과 Anthropic API 외의 연결과 외부 스크립트를 막아요.</li>
+      <li>백업 파일을 불러올 때 정해진 형식의 값만 받아들이고, API 키는 백업 파일에 넣지 않아요.</li>
+      <li>글꼴과 아이콘을 앱 안에 넣어 외부 서버에 요청하지 않아요.</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2>6. 만 14세 미만 이용자</h2>
+    <p>말문은 개인정보를 수집하지 않아 별도의 법정대리인 동의 절차가 없어요. 다만 AI 기능의 API 키 발급과 이용은 Anthropic의 이용 조건(연령 제한 포함)을 따라요.</p>
+  </section>
+
+  <section class="card">
+    <h2>7. 문의</h2>
+    <p>개인정보와 관련한 문의는 이 앱을 배포한 GitHub 저장소의 <b>Issues</b>에 남겨 주세요.</p>
+  </section>
+
+  <section class="card">
+    <h2>8. 변경</h2>
+    <p>이 방침이 바뀌면 이 페이지에 시행일과 함께 알려요.</p>
+  </section>
+</main>
+</body>
+</html>
