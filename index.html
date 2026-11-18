@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>말문</title>
+<meta name="description" content="하루 20분, 버튼 하나로 따라 하는 영어 말하기 연습. 인터넷 없이도 작동해요.">
+<meta name="theme-color" content="#f3f4fa" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0d0e18" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="말문">
+<link rel="preload" href="pretendard-800.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<main id="view" tabindex="-1"></main>
+<div id="spacer"></div>
+<div id="bottom"><div id="dock"></div>
+<nav class="tabs" aria-label="메뉴"><div class="in">
+  <button data-tab="home"><svg  viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M224,120v96a8,8,0,0,1-8,8H160a8,8,0,0,1-8-8V164a4,4,0,0,0-4-4H108a4,4,0,0,0-4,4v52a8,8,0,0,1-8,8H40a8,8,0,0,1-8-8V120a16,16,0,0,1,4.69-11.31l80-80a16,16,0,0,1,22.62,0l80,80A16,16,0,0,1,224,120Z"/></svg>오늘</button>
+  <button data-tab="practice"><svg  viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M120,56v48a16,16,0,0,1-16,16H56a16,16,0,0,1-16-16V56A16,16,0,0,1,56,40h48A16,16,0,0,1,120,56Zm80-16H152a16,16,0,0,0-16,16v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V56A16,16,0,0,0,200,40Zm-96,96H56a16,16,0,0,0-16,16v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V152A16,16,0,0,0,104,136Zm96,0H152a16,16,0,0,0-16,16v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V152A16,16,0,0,0,200,136Z"/></svg>연습</button>
+  <button data-tab="me"><svg  viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M232,208a8,8,0,0,1-8,8H32a8,8,0,0,1,0-16h8V136a8,8,0,0,1,8-8H72a8,8,0,0,1,8,8v64H96V88a8,8,0,0,1,8-8h32a8,8,0,0,1,8,8V200h16V40a8,8,0,0,1,8-8h40a8,8,0,0,1,8,8V200h8A8,8,0,0,1,232,208Z"/></svg>기록</button>
+</div></nav></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="phrases.js"></script>
+<script src="patterns.js"></script>
+<script src="dialogs.js"></script>
+<script src="listening.js"></script>
+<script src="leveltest.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
